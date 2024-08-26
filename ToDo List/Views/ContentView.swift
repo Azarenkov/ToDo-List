@@ -18,6 +18,8 @@ struct ContentView: View {
     
     @State var fetchItems: [Item] = []
     @State var showNewView = false
+    @State var showAlert = false
+    @State var errorMessage = ""
 
     var body: some View {
         NavigationView {
@@ -58,21 +60,30 @@ struct ContentView: View {
             .onAppear(perform: {
                 if shouldGetJson {
                     DispatchQueue.main.async {
-                        fetchTodosFromURL()
+                        fetchTodosFromURL { result in
+                            switch result {
+                            case .success(let todos):
+                                for todo in todos {
+                                    addItem(itemData: todo)
+                                }
+                            case.failure(let error):
+                                print(error)
+                                errorMessage = ("\(error)")
+                                showAlert.toggle()
+                            }
+                        }
                     }
                 }
             })
             Text("Select an item")
         }
-        .sheet(isPresented: $showNewView, onDismiss: {
-            withAnimation {
-            }
-        }) {
+        .sheet(isPresented: $showNewView, content: {
             NewTodoView()
                 .presentationDetents([.height(CGFloat(375))])
+        })
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Error"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }
-        
-
 
     }
     
@@ -80,23 +91,27 @@ struct ContentView: View {
         showNewView.toggle()
     }
     
-    private func fetchTodosFromURL() {
+    private func fetchTodosFromURL(completion: @escaping (Result<[Todo], Error>) -> Void) {
         let fetchRequest = URLRequest(url: Link.todos.url)
         
         URLSession.shared.dataTask(with: fetchRequest) { (data, response, error) -> Void in
-            if error != nil {
+            if let error = error {
                 print("Error in session")
+                completion(.failure(error))
             } else {
                 let httpResponse = response as? HTTPURLResponse
                 print(String(describing: httpResponse?.statusCode))
                 
-                guard let safeData = data else { return }
+                guard let safeData = data else {
+                    if let error = error {
+                        completion(.failure(error))
+                    }
+                    return
+                }
                 
                 if let decodedQuery = try? JSONDecoder().decode(Query.self, from: safeData) {
-                    var decodedTodos = decodedQuery.todos
-                    for todo in decodedTodos {
-                        addItem(itemData: todo)
-                    }
+                    let decodedTodos = decodedQuery.todos
+                    completion(.success(decodedTodos))
                 }
                 
             }

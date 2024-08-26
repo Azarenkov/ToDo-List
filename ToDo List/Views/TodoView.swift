@@ -79,6 +79,7 @@ struct TodoView: View {
                         .font(.title3)
                         .bold()
                 }
+                .tint(.blue)
             }
             Spacer()
         }
