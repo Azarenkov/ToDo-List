@@ -17,6 +17,7 @@
 		0F3D0B9B2C78E4F3005CFDFB /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F3D0B9A2C78E4F3005CFDFB /* Model.swift */; };
 		0F3D0B9D2C78E6F0005CFDFB /* TodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F3D0B9C2C78E6F0005CFDFB /* TodoView.swift */; };
 		0F3D0BC22C7A5B29005CFDFB /* NewTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F3D0BC12C7A5B29005CFDFB /* NewTodoView.swift */; };
+		0F3D0BC42C7CA613005CFDFB /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F3D0BC32C7CA613005CFDFB /* NetworkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		0F3D0B9A2C78E4F3005CFDFB /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		0F3D0B9C2C78E6F0005CFDFB /* TodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoView.swift; sourceTree = "<group>"; };
 		0F3D0BC12C7A5B29005CFDFB /* NewTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTodoView.swift; sourceTree = "<group>"; };
+		0F3D0BC32C7CA613005CFDFB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				0F3D0B9A2C78E4F3005CFDFB /* Model.swift */,
 				0F3D0B982C78E403005CFDFB /* Helpers.swift */,
 				0F3D0BBF2C7A5ACC005CFDFB /* Views */,
+				0F3D0BC52C7CAA09005CFDFB /* ViewModel */,
 				0F3D0B6B2C78E350005CFDFB /* Assets.xcassets */,
 				0F3D0B702C78E350005CFDFB /* Persistence.swift */,
 				0F3D0B722C78E350005CFDFB /* ToDo_List.xcdatamodeld */,
@@ -91,6 +94,14 @@
 				0F3D0BC12C7A5B29005CFDFB /* NewTodoView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		0F3D0BC52C7CAA09005CFDFB /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				0F3D0BC32C7CA613005CFDFB /* NetworkManager.swift */,
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +175,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F3D0B9B2C78E4F3005CFDFB /* Model.swift in Sources */,
+				0F3D0BC42C7CA613005CFDFB /* NetworkManager.swift in Sources */,
 				0F3D0B712C78E350005CFDFB /* Persistence.swift in Sources */,
 				0F3D0BC22C7A5B29005CFDFB /* NewTodoView.swift in Sources */,
 				0F3D0B992C78E403005CFDFB /* Helpers.swift in Sources */,

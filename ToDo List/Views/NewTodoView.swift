@@ -12,8 +12,8 @@ struct NewTodoView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
     
-    @State var title = ""
-    @State var discription = ""
+    @State private var title = ""
+    @State private var discription = ""
     
     var body: some View {
         

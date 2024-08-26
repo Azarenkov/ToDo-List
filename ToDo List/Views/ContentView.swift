@@ -16,11 +16,12 @@ struct ContentView: View {
     
     @AppStorage("shouldGetJson") var shouldGetJson = true
     
-    @State var fetchItems: [Item] = []
-    @State var showNewView = false
-    @State var showAlert = false
-    @State var errorMessage = ""
+    @State private var showNewView = false
+    @State private var showAlert = false
+    @State private var errorMessage = ""
 
+    @ObservedObject var networkManager = NetworkManager()
+    
     var body: some View {
         NavigationView {
             List {
@@ -60,7 +61,7 @@ struct ContentView: View {
             .onAppear(perform: {
                 if shouldGetJson {
                     DispatchQueue.main.async {
-                        fetchTodosFromURL { result in
+                        networkManager.fetchTodosFromURL { result in
                             switch result {
                             case .success(let todos):
                                 for todo in todos {
@@ -90,35 +91,7 @@ struct ContentView: View {
     private func showNewSheet() {
         showNewView.toggle()
     }
-    
-    private func fetchTodosFromURL(completion: @escaping (Result<[Todo], Error>) -> Void) {
-        let fetchRequest = URLRequest(url: Link.todos.url)
         
-        URLSession.shared.dataTask(with: fetchRequest) { (data, response, error) -> Void in
-            if let error = error {
-                print("Error in session")
-                completion(.failure(error))
-            } else {
-                let httpResponse = response as? HTTPURLResponse
-                print(String(describing: httpResponse?.statusCode))
-                
-                guard let safeData = data else {
-                    if let error = error {
-                        completion(.failure(error))
-                    }
-                    return
-                }
-                
-                if let decodedQuery = try? JSONDecoder().decode(Query.self, from: safeData) {
-                    let decodedTodos = decodedQuery.todos
-                    completion(.success(decodedTodos))
-                }
-                
-            }
-        }
-        .resume()
-    }
-    
     private func addItem(itemData: Todo) {
         let newItem = Item(context: viewContext)
         newItem.text = itemData.todo
@@ -146,7 +119,6 @@ struct ContentView: View {
             }
         }
     }
- 
 }
 
 let itemFormatter: DateFormatter = {
