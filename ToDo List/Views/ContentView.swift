@@ -21,6 +21,7 @@ struct ContentView: View {
     @State private var errorMessage = ""
 
     @ObservedObject var networkManager = NetworkManager()
+    @ObservedObject var coreDataVM = CoreDataViewModel()
     
     var body: some View {
         NavigationView {
@@ -43,7 +44,9 @@ struct ContentView: View {
                     }
                     
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: { indexSet in
+                    coreDataVM.deleteItems(offsets: indexSet, items: items, viewContext: viewContext)
+                })
             }
 
             .navigationTitle("ToDo List")
@@ -60,12 +63,27 @@ struct ContentView: View {
             }
             .onAppear(perform: {
                 if shouldGetJson {
+//                    DispatchQueue.main.async {
+//                        networkManager.fetchTodosFromURL { result in
+//                            switch result {
+//                            case .success(let todos):
+//                                for todo in todos {
+//                                    addItem(itemData: todo)
+//                                }
+//                            case.failure(let error):
+//                                print(error)
+//                                errorMessage = ("\(error)")
+//                                showAlert.toggle()
+//                            }
+//                        }
+//                    }
                     DispatchQueue.main.async {
                         networkManager.fetchTodosFromURL { result in
                             switch result {
                             case .success(let todos):
                                 for todo in todos {
-                                    addItem(itemData: todo)
+                                    coreDataVM.addItem(itemData: todo, viewContext: viewContext)
+                                    shouldGetJson = false
                                 }
                             case.failure(let error):
                                 print(error)
@@ -92,33 +110,6 @@ struct ContentView: View {
         showNewView.toggle()
     }
         
-    private func addItem(itemData: Todo) {
-        let newItem = Item(context: viewContext)
-        newItem.text = itemData.todo
-        newItem.completed = itemData.completed
-        newItem.timestamp = Date()
-        do {
-            try viewContext.save()
-            shouldGetJson = false
-        } catch let error{
-            print(error)
-        }
-
-        
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
 }
 
 let itemFormatter: DateFormatter = {

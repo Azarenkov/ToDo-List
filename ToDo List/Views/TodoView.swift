@@ -17,6 +17,8 @@ struct TodoView: View {
     @State private var text: String
     @State private var completed: Bool
     
+    @ObservedObject var coreDataVM = CoreDataViewModel()
+
     init(todo: Item) {
         self._todo = State(initialValue: todo)
         self._title = State(initialValue: todo.title ?? "")
@@ -86,7 +88,7 @@ struct TodoView: View {
         .toolbar {
             ToolbarItem {
                 Button {
-                    updateData(entity: todo)
+                    coreDataVM.updateData(entity: todo, viewContext: viewContext, title: title, text: text, completed: completed)
                     dismiss()
                 } label: {
                     Text("Save")
@@ -95,20 +97,6 @@ struct TodoView: View {
             }
         }
         .padding()
-    }
-    
-    private func updateData(entity: Item) {
-        let id = entity.objectID
-        do {
-            if let item = try viewContext.existingObject(with: id) as? Item {
-                item.title = title
-                item.text = text
-                item.completed = completed
-                try viewContext.save()
-            }
-        } catch let error {
-            print(error)
-        }
     }
 }
 

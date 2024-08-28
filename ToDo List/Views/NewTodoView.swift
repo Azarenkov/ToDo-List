@@ -15,6 +15,9 @@ struct NewTodoView: View {
     @State private var title = ""
     @State private var discription = ""
     
+    @ObservedObject var coreDataVM = CoreDataViewModel()
+
+    
     var body: some View {
         
         VStack(spacing: 30) {
@@ -60,7 +63,7 @@ struct NewTodoView: View {
             }
             
             Button {
-                addTodo()
+                coreDataVM.addTodo(viewContext: viewContext, title: title, discription: discription)
                 dismiss()
             } label: {
                 Text("Save")
@@ -70,22 +73,6 @@ struct NewTodoView: View {
         }
         .padding()
         .padding(.top, 30)
-    }
-    
-    private func addTodo() {
-        let newItem = Item(context: viewContext)
-        newItem.title = title
-        newItem.text = discription
-        newItem.timestamp = Date()
-        newItem.completed = false
-        
-            
-        do {
-            try viewContext.save()
-        } catch {
-            let nsError = error as NSError
-            fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-        }
     }
 }
 

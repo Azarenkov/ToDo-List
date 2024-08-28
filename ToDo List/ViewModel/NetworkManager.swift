@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 class NetworkManager: ObservableObject {
             
@@ -37,4 +36,9 @@ class NetworkManager: ObservableObject {
         }
         .resume()
     }
+    
+
+
 }
+
+
