@@ -15,7 +15,7 @@ struct NewTodoView: View {
     @State private var title = ""
     @State private var discription = ""
     
-    @ObservedObject var coreDataVM = CoreDataViewModel()
+    @ObservedObject var viewModel: ViewModel
 
     
     var body: some View {
@@ -63,7 +63,8 @@ struct NewTodoView: View {
             }
             
             Button {
-                coreDataVM.addTodo(viewContext: viewContext, title: title, discription: discription)
+//                coreDataVM.addTodo(viewContext: viewContext, title: title, discription: discription)
+                viewModel.addTodo(viewContext: viewContext, title: title, discription: discription)
                 dismiss()
             } label: {
                 Text("Save")
@@ -76,6 +77,6 @@ struct NewTodoView: View {
     }
 }
 
-#Preview {
-    NewTodoView()
-}
+//#Preview {
+//    NewTodoView()
+//}

@@ -13,7 +13,7 @@ struct ToDo_ListApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Router.createModule()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

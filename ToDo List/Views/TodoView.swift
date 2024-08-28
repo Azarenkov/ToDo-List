@@ -17,13 +17,14 @@ struct TodoView: View {
     @State private var text: String
     @State private var completed: Bool
     
-    @ObservedObject var coreDataVM = CoreDataViewModel()
+    @ObservedObject var viewModel: ViewModel
 
-    init(todo: Item) {
+    init(todo: Item, viewModel: ViewModel) {
         self._todo = State(initialValue: todo)
         self._title = State(initialValue: todo.title ?? "")
         self._text = State(initialValue: todo.text ?? "")
         self._completed = State(initialValue: todo.completed)
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -88,7 +89,7 @@ struct TodoView: View {
         .toolbar {
             ToolbarItem {
                 Button {
-                    coreDataVM.updateData(entity: todo, viewContext: viewContext, title: title, text: text, completed: completed)
+                    viewModel.updateData(entity: todo, viewContext: viewContext, title: title, text: text, completed: completed)
                     dismiss()
                 } label: {
                     Text("Save")
@@ -100,6 +101,6 @@ struct TodoView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}

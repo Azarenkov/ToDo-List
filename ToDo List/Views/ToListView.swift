@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreData
 
-struct ContentView: View {
+struct ToListView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Item.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: false)], animation: .default)
@@ -20,8 +20,7 @@ struct ContentView: View {
     @State private var showAlert = false
     @State private var errorMessage = ""
 
-    @ObservedObject var networkManager = NetworkManager()
-    @ObservedObject var coreDataVM = CoreDataViewModel()
+    @ObservedObject var viewModel: ViewModel
     
     var body: some View {
         NavigationView {
@@ -32,7 +31,7 @@ struct ContentView: View {
                             .foregroundColor(.blue)
                         
                         NavigationLink {
-                            TodoView(todo: todo)
+                            TodoView(todo: todo, viewModel: viewModel)
                             
                         } label: {
                             VStack(alignment: .leading) {
@@ -45,7 +44,7 @@ struct ContentView: View {
                     
                 }
                 .onDelete(perform: { indexSet in
-                    coreDataVM.deleteItems(offsets: indexSet, items: items, viewContext: viewContext)
+                    viewModel.deleteItems(offsets: indexSet, items: items, viewContext: viewContext)
                 })
             }
 
@@ -63,41 +62,16 @@ struct ContentView: View {
             }
             .onAppear(perform: {
                 if shouldGetJson {
-//                    DispatchQueue.main.async {
-//                        networkManager.fetchTodosFromURL { result in
-//                            switch result {
-//                            case .success(let todos):
-//                                for todo in todos {
-//                                    addItem(itemData: todo)
-//                                }
-//                            case.failure(let error):
-//                                print(error)
-//                                errorMessage = ("\(error)")
-//                                showAlert.toggle()
-//                            }
-//                        }
-//                    }
-                    DispatchQueue.main.async {
-                        networkManager.fetchTodosFromURL { result in
-                            switch result {
-                            case .success(let todos):
-                                for todo in todos {
-                                    coreDataVM.addItem(itemData: todo, viewContext: viewContext)
-                                    shouldGetJson = false
-                                }
-                            case.failure(let error):
-                                print(error)
-                                errorMessage = ("\(error)")
-                                showAlert.toggle()
-                            }
-                        }
+                    viewModel.fetchTodosFromUrlAndSave(viewContext: viewContext) { error, shouldShowAlert in
+                        errorMessage = error
+                        showAlert = shouldShowAlert
                     }
                 }
             })
             Text("Select an item")
         }
         .sheet(isPresented: $showNewView, content: {
-            NewTodoView()
+            NewTodoView(viewModel: viewModel)
                 .presentationDetents([.height(CGFloat(375))])
         })
         .alert(isPresented: $showAlert) {
@@ -119,6 +93,6 @@ let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView()
+//}

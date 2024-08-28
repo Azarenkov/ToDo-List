@@ -8,7 +8,6 @@
 import Foundation
 
 struct Todo: Decodable, Hashable {
-//    let id: Int
     let todo: String
     let completed: Bool
 }

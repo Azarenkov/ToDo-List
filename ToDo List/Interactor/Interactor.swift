@@ -1,15 +1,53 @@
 //
-//  CoreDataViewModel.swift
+//  Interractor.swift
 //  ToDo List
 //
 //  Created by Алексей Азаренков on 28.08.2024.
 //
 
 import Foundation
-import SwiftUI
 import CoreData
+import SwiftUI
 
-class CoreDataViewModel: ObservableObject {
+protocol InteractorProtocol: AnyObject {
+    func fetchTodosFromURL(completion: @escaping (Result<[Todo], Error>) -> Void)
+    func addItem(itemData: Todo, viewContext: NSManagedObjectContext)
+    func updateData(entity: Item, viewContext: NSManagedObjectContext, title: String, text: String, completed: Bool)
+    func addTodo(viewContext: NSManagedObjectContext, title: String, discription: String)
+    func deleteItems(offsets: IndexSet, items: FetchedResults<Item>, viewContext: NSManagedObjectContext)
+}
+
+class Interactor: InteractorProtocol {
+    
+    weak var presentor: PresenterProtocol?
+    
+    func fetchTodosFromURL(completion: @escaping (Result<[Todo], any Error>) -> Void) {
+        let fetchRequest = URLRequest(url: Link.todos.url)
+        
+        URLSession.shared.dataTask(with: fetchRequest) { (data, response, error) -> Void in
+            if let error = error {
+                print("Error in session")
+                completion(.failure(error))
+            } else {
+                let httpResponse = response as? HTTPURLResponse
+                print(String(describing: httpResponse?.statusCode))
+                
+                guard let safeData = data else {
+                    if let error = error {
+                        completion(.failure(error))
+                    }
+                    return
+                }
+                
+                if let decodedQuery = try? JSONDecoder().decode(Query.self, from: safeData) {
+                    let decodedTodos = decodedQuery.todos
+                    completion(.success(decodedTodos))
+                }
+                
+            }
+        }
+        .resume()
+    }
     
     func addItem(itemData: Todo, viewContext: NSManagedObjectContext) {
         let newItem = Item(context: viewContext)
@@ -21,8 +59,6 @@ class CoreDataViewModel: ObservableObject {
         } catch let error{
             print(error)
         }
-
-        
     }
     
     func updateData(entity: Item, viewContext: NSManagedObjectContext, title: String, text: String, completed: Bool) {
