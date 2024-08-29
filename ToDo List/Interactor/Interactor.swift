@@ -21,6 +21,7 @@ class Interactor: InteractorProtocol {
     
     weak var presentor: PresenterProtocol?
     
+// MARK: - Получение данных при помоши URLSession
     func fetchTodosFromURL(completion: @escaping (Result<[Todo], any Error>) -> Void) {
         let fetchRequest = URLRequest(url: Link.todos.url)
         
@@ -49,6 +50,7 @@ class Interactor: InteractorProtocol {
         .resume()
     }
     
+// MARK: - Сохранение полученных данных из Rest API в CoreData
     func addItem(itemData: Todo, viewContext: NSManagedObjectContext) {
         let newItem = Item(context: viewContext)
         newItem.text = itemData.todo
@@ -60,7 +62,8 @@ class Interactor: InteractorProtocol {
             print(error)
         }
     }
-    
+
+//  MARK: - Изменение данных в CoreData
     func updateData(entity: Item, viewContext: NSManagedObjectContext, title: String, text: String, completed: Bool) {
         let id = entity.objectID
         do {
@@ -74,7 +77,8 @@ class Interactor: InteractorProtocol {
             print(error)
         }
     }
-    
+
+//  MARK: - Создание данных в CoreData
     func addTodo(viewContext: NSManagedObjectContext, title: String, discription: String) {
         let newItem = Item(context: viewContext)
         newItem.title = title
@@ -91,6 +95,7 @@ class Interactor: InteractorProtocol {
         }
     }
     
+//  MARK: - Удаление данных в CoreData
     func deleteItems(offsets: IndexSet, items: FetchedResults<Item>, viewContext: NSManagedObjectContext) {
         withAnimation {
             offsets.map { items[$0] }.forEach(viewContext.delete)
